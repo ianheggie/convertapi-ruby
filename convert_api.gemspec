@@ -13,6 +13,8 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/ConvertAPI/convertapi-ruby'
   spec.license       = 'MIT'
 
+  spec.required_ruby_version = '~> 1.8.7'
+
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features|examples)/})
   end
