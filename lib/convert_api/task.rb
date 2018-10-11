@@ -1,16 +1,16 @@
 module ConvertApi
   class Task
-    def initialize(from_format, to_format, params, conversion_timeout: nil)
+    def initialize(from_format, to_format, params, options = { })
       @from_format = from_format
       @to_format = to_format
       @params = params
-      @conversion_timeout = conversion_timeout || config.conversion_timeout
+      @conversion_timeout = options[:conversion_timeout] || config.conversion_timeout
     end
 
     def run
       params = normalize_params(@params).merge(
-        Timeout: @conversion_timeout,
-        StoreFile: true,
+        :Timeout => @conversion_timeout,
+        :StoreFile => true
       )
 
       from_format = @from_format || detect_format(params)
@@ -19,7 +19,7 @@ module ConvertApi
       response = ConvertApi.client.post(
         "convert/#{from_format}/to/#{@to_format}",
         params,
-        read_timeout: read_timeout
+        :read_timeout => read_timeout
       )
 
       Result.new(response)
@@ -51,11 +51,17 @@ module ConvertApi
     def files_batch(values)
       files = Array(values).map { |file| FileParam.build(file) }
 
-      # upload files in parallel
-      files
-        .select { |file| file.is_a?(UploadIO) }
-        .map { |upload_io| Thread.new { upload_io.file_id } }
-        .map(&:join)
+      if ConvertApi::USE_THREADS
+        # upload files in parallel
+        files.
+          select { |file| file.is_a?(UploadIO) }.
+          map { |upload_io| Thread.new { upload_io.file_id } }.
+          map{|thread| thread.join}
+      else
+        files.select { |file| file.is_a?(UploadIO) }.each do |upload_io|
+          upload_io.file_id
+        end
+      end
 
       files
     end

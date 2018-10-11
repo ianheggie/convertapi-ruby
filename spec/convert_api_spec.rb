@@ -31,12 +31,12 @@ RSpec.describe ConvertApi do
 
   describe '.convert' do
     subject do
-      described_class.convert(to_format, params, from_format: from_format)
+      described_class.convert(to_format, params, :from_format => from_format)
     end
 
     let(:from_format) { nil }
     let(:to_format) { 'pdf' }
-    let(:params) { { File: 'examples/files/test.docx' } }
+    let(:params) { { :File => 'examples/files/test.docx' } }
 
     shared_examples 'successful conversion' do
       it 'returns result' do
@@ -52,20 +52,20 @@ RSpec.describe ConvertApi do
     it_behaves_like 'successful conversion'
 
     context 'with web resource' do
-      let(:params) { { Url: 'http://convertapi.com' } }
+      let(:params) { { :Url => 'http://convertapi.com' } }
 
       it_behaves_like 'successful conversion'
     end
 
     context 'with web resource' do
       let(:from_format) { 'web' }
-      let(:params) { { Url: 'http://convertapi.com' } }
+      let(:params) { { :Url => 'http://convertapi.com' } }
 
       it_behaves_like 'successful conversion'
     end
 
     context 'with io source' do
-      let(:params) { { File: ConvertApi::UploadIO.new(io, 'test.txt') } }
+      let(:params) { { :File => ConvertApi::UploadIO.new(io, 'test.txt') } }
       let(:io) { StringIO.new('Hello world') }
 
       it_behaves_like 'successful conversion'
@@ -73,7 +73,7 @@ RSpec.describe ConvertApi do
 
     context 'with multiple files' do
       let(:to_format) { 'zip' }
-      let(:params) { { Files: [file1, file2] } }
+      let(:params) { { :Files => [file1, file2] } }
       let(:file1) { 'examples/files/test.pdf' }
       let(:file2) { ConvertApi::UploadIO.new('examples/files/test.pdf', 'test2.pdf') }
 
@@ -81,14 +81,14 @@ RSpec.describe ConvertApi do
     end
 
     context 'with result' do
-      let(:params) { { File: result } }
+      let(:params) { { :File => result } }
 
       let(:result) do
         ConvertApi::Result.new(
           'ConversionCost' => 1,
           'Files' => [
             'Url' => 'https://www.w3.org/TR/PNG/iso_8859-1.txt',
-          ],
+          ]
         )
       end
 

@@ -19,15 +19,23 @@ module ConvertApi
     end
 
     def urls
-      files.map(&:url)
+      files.map{|o| o.url}
     end
 
     def save_files(path)
-      threads = files.map do |file|
-        Thread.new { file.save(path) }
-      end
+      if ConvertApi::USE_THREADS
+        threads = files.map do |file|
+          Thread.new { file.save(path) }
+        end
 
-      threads.map(&:value)
+        threads.map do |thread|
+          thread.value
+        end
+      else
+        files.map do |file|
+          file.save(path)
+        end
+      end
     end
   end
 end

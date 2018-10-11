@@ -1,7 +1,9 @@
 require 'net/https'
 require 'uri'
 require 'cgi'
+require 'rubygems'
 require 'json'
+require 'zlib'
 
 module ConvertApi
   class Client
@@ -18,7 +20,7 @@ module ConvertApi
       Net::HTTPHeaderSyntaxError,
       Net::ProtocolError,
       SocketError,
-      Zlib::GzipFile::Error,
+      Zlib::GzipFile::Error
     ]
 
     USER_AGENT = "ConvertAPI-Ruby/#{VERSION}"
@@ -53,13 +55,13 @@ module ConvertApi
         headers = DEFAULT_HEADERS.merge(
           'Content-Type' => 'application/octet-stream',
           'Transfer-Encoding' => 'chunked',
-          'Content-Disposition' => "attachment; filename*=UTF-8''#{encoded_filename}",
+          'Content-Disposition' => "attachment; filename*=UTF-8''#{encoded_filename}"
         )
 
         request = Net::HTTP::Post.new(request_uri, headers)
         request.body_stream = io
 
-        http(read_timeout: config.upload_timeout).request(request)
+        http(:read_timeout => config.upload_timeout).request(request)
       end
     end
 
@@ -71,11 +73,13 @@ module ConvertApi
         status = response.code.to_i
 
         if status != 200
+          headers = { }
+          response.each_header{|key,value| headers[key] = value }
           raise(
             ClientError,
-            status: status,
-            body: response.body,
-            headers: response.each_header.to_h,
+            :status => status,
+            :body => response.body,
+            :headers => headers
           )
         end
 
@@ -91,11 +95,12 @@ module ConvertApi
       raise(TimeoutError, e)
     end
 
-    def http(read_timeout: nil)
+    def http(params = {})
       http = Net::HTTP.new(base_uri.host, base_uri.port)
       http.open_timeout = config.connect_timeout
-      http.read_timeout = read_timeout || config.read_timeout
+      http.read_timeout = params[:read_timeout] || config.read_timeout
       http.use_ssl = base_uri.scheme == 'https'
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE if http.use_ssl && RUBY_VERSION == '1.8.7'
       # http.set_debug_output $stderr
       http
     end
@@ -103,8 +108,11 @@ module ConvertApi
     def request_uri(path, params = {})
       raise(SecretError, 'API secret not configured') if config.api_secret.nil?
 
-      params_with_secret = params.merge(Secret: config.api_secret)
-      query = URI.encode_www_form(params_with_secret)
+      params_with_secret = params.merge(:Secret => config.api_secret)
+      query = params_with_secret.map do |key, value|
+        "#{key}=#{CGI.escape(value)}"
+      end.join('&')
+      #query = URI.encode_www_form(params_with_secret)
 
       base_uri.path + path + '?' + query
     end

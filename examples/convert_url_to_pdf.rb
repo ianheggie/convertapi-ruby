@@ -11,7 +11,7 @@ end
 result = ConvertApi.convert(
   'pdf',
   {
-    Url: 'https://en.wikipedia.org/wiki/Data_conversion',
+    :Url => 'https://en.wikipedia.org/wiki/Data_conversion',
     FileName: 'web-example'
   },
   from_format: 'web',
