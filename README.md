@@ -11,7 +11,7 @@ The ConvertAPI helps converting various file formats. Creating PDF and Images fr
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'convert_api'
+gem 'convert_api187'
 ```
 
 ## Usage
