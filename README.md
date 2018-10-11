@@ -1,13 +1,10 @@
-# ConvertAPI Ruby Client
-
-
-[![Gem](https://img.shields.io/gem/v/convert_api.svg)](https://rubygems.org/gems/convert_api)
-[![Build Status](https://secure.travis-ci.org/ConvertAPI/convertapi-ruby.svg)](http://travis-ci.org/ConvertAPI/convertapi-ruby)
+# ConvertAPI Ruby Client for ruby 1.8.7
 
 ## Convert your files with our online file conversion API
 
 The ConvertAPI helps converting various file formats. Creating PDF and Images from various sources like Word, Excel, Powerpoint, images, web pages or raw HTML codes. Merge, Encrypt, Split, Repair and Decrypt PDF files. And many others files manipulations. In just few minutes you can integrate it into your application and use it easily.
 
+**This is a clone that has been backported to ruby 1.8.7 by Ian Heggie**
 
 ## Installation
 
@@ -35,7 +32,7 @@ Example to convert file to PDF. All supported formats and options can be found
 [here](https://www.convertapi.com).
 
 ```ruby
-result = ConvertApi.convert('pdf', File: '/path/to/my_file.docx')
+result = ConvertApi.convert('pdf', :File => '/path/to/my_file.docx')
 
 # save to file
 result.file.save('/path/to/save/file.pdf')
@@ -57,7 +54,7 @@ conversion_cost = result.conversion_cost
 #### Convert file url
 
 ```ruby
-result = ConvertApi.convert('pdf', File: 'https://website/my_file.docx')
+result = ConvertApi.convert('pdf', :File => 'https://website/my_file.docx')
 ```
 
 #### Specifying from format
@@ -65,7 +62,7 @@ result = ConvertApi.convert('pdf', File: 'https://website/my_file.docx')
 ```ruby
 result = ConvertApi.convert(
   'pdf', 
-  { File: /path/to/my_file' }, 
+  { :File => /path/to/my_file' }, 
   from_format: 'docx'
 )
 ```
@@ -78,7 +75,7 @@ parameters and explanations can be found [here](https://www.convertapi.com).
 ```ruby
 result = ConvertApi.convert(
   'pdf', 
-  File: /path/to/my_file.docx',
+  :File => /path/to/my_file.docx',
   PageRange: '1-10',
   PdfResolution: '150',
 )
@@ -112,3 +109,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/Conver
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+
+## Known Issues
+
+* Uploading multiple files doesn't currently work - 
