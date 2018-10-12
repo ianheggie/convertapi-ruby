@@ -10,7 +10,7 @@ module ConvertApi
         value.file.url
       when ResultFile
         value.url
-      when IO
+      when IO, StringIO
         UploadIO.new(value)
       else
         UploadIO.new(File.open(value))
