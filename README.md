@@ -36,6 +36,9 @@ result = ConvertApi.convert('pdf', :File => '/path/to/my_file.docx')
 
 # save to file
 result.file.save('/path/to/save/file.pdf')
+
+# OR get contents as a string
+result.file.contents
 ```
 
 Other result operations:

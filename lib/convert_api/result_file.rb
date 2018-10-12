@@ -31,9 +31,7 @@ module ConvertApi
       http
     end
 
-    def save(path)
-      path = File.join(path, filename) if File.directory?(path)
-
+    def contents
       request = Net::HTTP::Get.new(url, Client::DEFAULT_HEADERS)
 
       response = http({}).request(request)
@@ -50,8 +48,14 @@ module ConvertApi
             :headers => headers
         )
       end
+      response.body
+    end
+
+    def save(path)
+      path = File.join(path, filename) if File.directory?(path)
+
       File.open(path, 'w') do |f|
-        f.write response.body
+        f.write contents
       end
 
       path
