@@ -11,10 +11,10 @@ module ConvertApi
 
     def initialize
       @base_uri = URI('https://v2.convertapi.com/')
-      @connect_timeout = 5
-      @read_timeout = 60
+      @connect_timeout = 15
+      @read_timeout = 120
       @conversion_timeout = 180
-      @conversion_timeout_delta = 10
+      @conversion_timeout_delta = 20
       @upload_timeout = 600
       @download_timeout = 600
     end
